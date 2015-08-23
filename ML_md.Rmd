@@ -1,0 +1,53 @@
+---
+title: "Practical Machine Learning Assignment"
+author: "Dmitry Ozernov"
+date: "August 21, 2015"
+output: html_document
+---
+
+This document describes the process of the creation of my model for the Practical Machine Learning assignment. This process consisted of four steps:  
+1. Exploration of the data set.  
+2. Clearing the data set.  
+3. Creation of the model, calibration.  
+4. Evaluation of the results, conclusions.  
+
+### Exploration of the data set
+Variables in the data set were of two kinds: momentum variables that reflect current data from the sensors; and summary variables, like mean/median/stdev, that describe the overall results of the exercise. I have chosen to build the model on the former data first, because it required less efforts to handle the data.
+
+###Clearing the data set
+I've dropped summary variables and left with data subset with 54 variables. No NA's or other errors or missed data appeared, so I've moved on to creation of the model.
+
+###Creation of the model, calibration
+As it was my first experience with the caret package and with data models' creation in R at all, I've explored different methods for this task. Because of the nature of the problem (classification), I didn't use regression methods. Two methods were tested: Boosting (from gbm package) and Random Forest. Because of the very slow calculation in gbm method, I preferred to stay on RF method.  
+
+
+```{r, echo=FALSE, include = F}
+table1 <- matrix(rbind(c(2, 0.9960246, 0.9949712, 0.0016448462, 0.002081279),
+                       c(30, 0.9984201, 0.9980015, 0.0008481257, 0.001072992),
+                       c(58, 0.9963306, 0.9953584, 0.0016786545, 0.002123727)), ncol=5)
+colnames(table1) <- c('mtry', 'Accuracy', 'Kappa', 'Accuracy SD', 'Kappa SD')
+library(knitr)
+
+```
+
+>Random Forest 
+>
+>19622 samples
+>   54 predictor
+>    5 classes: 'A', 'B', 'C', 'D', 'E' 
+>
+>No pre-processing
+>Resampling: Cross-Validated (10 fold) 
+>Summary of sample sizes: 17660, 17660, 17659, 17661, 17661, 17660, ...   
+>Resampling results across tuning parameters:
+
+```{r, echo=FALSE, message=FALSE}
+
+kable(table1)
+```
+
+>Accuracy was used to select the optimal model using  the largest value.
+The final value used for the model was mtry = 30. 
+
+##Evaluation of the results, conclusions
+Very high accuracy of the model first looked like overfitting. But after a very robust check (analogous model on train set with 2000 points and test set with 18000 data points) with accuracy above 0.95 I've trusted that the model is correct. 100% results from the submission testing set followed.
